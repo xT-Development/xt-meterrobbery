@@ -2,7 +2,7 @@ local xTc = require('modules.client')
 local CurrentCops = 0
 
 -- Police Alert --
-RegisterNetEvent('xt-meterrobbery:client:AlertPolice', function(COORDS)
+RegisterNetEvent('xt-meterrobbery:client:AlertPolice', function()
     local pCoords = GetEntityCoords(cache.ped, true)
     local chance = math.random(1, 100)
     if chance <= Config.PoliceChance then
