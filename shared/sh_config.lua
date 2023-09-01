@@ -2,7 +2,6 @@ Config = {}
 
 -- Debug Configs --
 Config.Debug = true
-Config.DebugPoly = true
 
 -- Police Configs --
 Config.MinimumPolice = 0
