@@ -42,7 +42,7 @@ Config.Payout = {
 }
 
 -- Time Configs --
-Config.OpenMeterLength = 2
+Config.OpenMeterLength = 3
 Config.RobbingLength = 2
 Config.MeterCooldowns = 20
 
@@ -62,4 +62,4 @@ Config.Models = {
 
 -------------------------------------------------
 
-QBCore = exports['qb-core']:GetCoreObject()
+Bridge = exports['Renewed-Lib']:getLib()
