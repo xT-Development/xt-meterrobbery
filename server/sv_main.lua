@@ -1,38 +1,49 @@
 local Utils = require('modules.shared')
 local Cooldowns = {}
 
--- Get Meter Cooldown --
-lib.callback.register('xt-meterrobbery:server:GetMeterCooldown', function(source, ID) return Cooldowns[ID] end)
-
--- Rob Meters --
-lib.callback.register('xt-meterrobbery:server:RobMeter', function(source, COORDS, METERID)
-    local Player = QBCore.Functions.GetPlayer(source)
-    local pCoords = GetEntityCoords(GetPlayerPed(source))
-    local dist = #(COORDS - pCoords)
+-- Distance Between Player & Meter --
+local function distanceCheck(src, meterCoords)
     local callback = false
+    local pCoords = GetEntityCoords(GetPlayerPed(src))
+    local dist = #(meterCoords - pCoords)
 
-    if not Player then return callback end
-    if dist >= 5 then return callback end
-
-    local payOut = math.random(Config.Payout.min, Config.Payout.max)
-    if Player.Functions.AddMoney('cash', payOut) then
-        TriggerEvent('xt-parkingmeter:server:MeterCooldown', source, COORDS, METERID, true)
+    if dist <= 5 then
         callback = true
     end
+
+    return callback
+end
+
+-- Get Meter Cooldown --
+lib.callback.register('xt-meterrobbery:server:getMeterCooldown', function(source, entityID) return Cooldowns[entityID] end)
+
+-- Rob Meters --
+lib.callback.register('xt-meterrobbery:server:robParkingMeter', function(source, meterInfo)
+    local src = source
+    local dist = distanceCheck(src, meterInfo.coords)
+    local callback = false
+    if not dist then return callback end
+
+    local payOut = math.random(Config.Payout.min, Config.Payout.max)
+    if Bridge.addMoney(src, payOut, 'cash') then
+        TriggerEvent('xt-parkingmeter:server:setMeterCooldown', source, meterInfo, true)
+        callback = true
+    end
+
     return callback
 end)
 
 -- Parking Meter Cooldown --
-RegisterNetEvent('xt-parkingmeter:server:MeterCooldown', function(SRC, COORDS, METERID, BOOL)
-    local pCoords = GetEntityCoords(GetPlayerPed(SRC))
-    local dist = #(COORDS - pCoords)
-    if dist >= 5 then return end
-    
-    if Cooldowns[METERID] == BOOL then return end
-    Cooldowns[METERID] = BOOL
-    if BOOL then
+RegisterNetEvent('xt-parkingmeter:server:setMeterCooldown', function(src, meterInfo, bool)
+    local dist = distanceCheck(src, meterInfo.coords)
+    if not dist then return end
+
+    if Cooldowns[meterInfo.entity] == bool then return end
+    Cooldowns[meterInfo.entity] = bool
+
+    if bool then
         SetTimeout((Config.MeterCooldowns * 1000), function()
-            Cooldowns[METERID] = nil
+            Cooldowns[meterInfo.entity] = nil
         end)
     end
 end)
