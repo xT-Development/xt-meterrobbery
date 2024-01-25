@@ -1,67 +1,74 @@
 local xTc = require('modules.client')
 local CurrentCops = 0
 
+-- Rob Meter --
+function robParkingMeter(data)
+    local playerPed = cache.ped
+    local playerPedPos = GetEntityCoords(playerPed, true)
+
+    if not data.entity then return end
+    if CurrentCops >= Config.MinimumPolice then
+
+        local Cooldown = lib.callback.await('xt-meterrobbery:server:getMeterCooldown', false, data.entity)
+        if Cooldown then lib.notify({ title = 'This meter is broken!', type = 'error' }) return end
+
+        TriggerEvent('xt-meterrobbery:client:AlertPolice')
+
+        lib.requestAnimDict('anim@melee@machete@streamed_core@')
+        TaskPlayAnim(cache.ped, 'anim@melee@machete@streamed_core@', 'plyr_walking_attack_a', 3.0, 3.0, -1, 16, 0, false, false, false)
+
+        local difficulty = Config.Minigame.difficulty[math.random(1, #Config.Minigame.difficulty)]
+        local success = lib.skillCheck(difficulty, Config.Minigame.keys)
+
+        if success then
+
+            if lib.progressCircle({
+                label = 'Opening Parking Meter...',
+                duration = (Config.OpenMeterLength * 1000),
+                position = 'bottom',
+                useWhileDead = false,
+                canCancel = true,
+                disable = { car = true, move = true },
+                anim = { dict = 'anim@melee@machete@streamed_core@', clip = 'plyr_walking_attack_a' },
+            }) then
+
+                xTc.PTFX(data.entity)
+
+                if lib.progressCircle({
+                    label = 'Robbing Parking Meter...',
+                    duration = (Config.RobbingLength * 1000),
+                    position = 'bottom',
+                    useWhileDead = false,
+                    canCancel = true,
+                    disable = { car = true, move = true },
+                    anim = { dict = 'anim@scripted@player@freemode@tun_prep_grab_midd_ig3@male@', clip = 'tun_prep_grab_midd_ig3' },
+                }) then
+                    ClearPedTasks(cache.ped)
+                    local meterInfo = { coords = data.coords, entity = data.entity }
+                    local getMoney = lib.callback.await('xt-meterrobbery:server:robParkingMeter', false, meterInfo)
+                    if getMoney then return end
+                else
+                    ClearPedTasks(cache.ped)
+                    lib.notify({ title = 'Canceled...', type = 'error' })
+                end
+            else
+                ClearPedTasks(cache.ped)
+                lib.notify({ title = 'Canceled...', type = 'error' })
+            end
+        else
+            ClearPedTasks(cache.ped)
+        end
+    else
+        lib.notify({ title = 'Not enough Police!', type = 'error' })
+    end
+end
+
 -- Police Alert --
 RegisterNetEvent('xt-meterrobbery:client:AlertPolice', function()
     local pCoords = GetEntityCoords(cache.ped, true)
     local chance = math.random(1, 100)
     if chance <= Config.PoliceChance then
         Config.DispatchFunction(pCoords)
-    end
-end)
-
--- Rob Meter --
-RegisterNetEvent('xt-meterrobbery:client:RobMeter', function(DATA)
-    local playerPed = cache.ped
-    local playerPedPos = GetEntityCoords(playerPed, true)
-
-    if not DATA.entity then return end
-    if CurrentCops >= Config.MinimumPolice then
-
-        local Cooldown = lib.callback.await('xt-meterrobbery:server:GetMeterCooldown', false, DATA.entity)
-        if Cooldown then QBCore.Functions.Notify('This meter is broken!', 'error') return end
-
-        TriggerEvent('xt-meterrobbery:client:AlertPolice')
-
-        lib.requestAnimDict('anim@gangops@facility@servers@')
-        TaskPlayAnim(cache.ped, 'anim@gangops@facility@servers@', 'hotwire', 3.0, 3.0, -1, 1, 0, false, false, false)
-
-        local difficulty = Config.Minigame.difficulty[math.random(1, #Config.Minigame.difficulty)]
-        local success = lib.skillCheck(difficulty, Config.Minigame.keys)
-
-        if success then
-            QBCore.Functions.Progressbar('open_meter', 'Opening Parking Meter...', (Config.OpenMeterLength * 1000), false, true, {
-                disableMovement = true,
-                disableCarMovement = true,
-                disableMouse = false,
-                disableCombat = true,
-            }, {}, {}, {}, function()
-                QBCore.Functions.Progressbar('rob_meter', 'Robbing Parking Meter...', (Config.RobbingLength * 1000), false, true, {
-                    disableMovement = true,
-                    disableCarMovement = true,
-                    disableMouse = false,
-                    disableCombat = true,
-                }, {
-                    animDict = 'oddjobs@shop_robbery@rob_till',
-                    anim = 'loop',
-                    flags = 17,
-                }, {}, {}, function()
-                    ClearPedTasks(cache.ped)
-                    local getMoney = lib.callback.await('xt-meterrobbery:server:RobMeter', false, DATA.coords, DATA.entity)
-                    if getMoney then return end
-                end, function()
-                    ClearPedTasks(cache.ped)
-                    QBCore.Functions.Notify('Canceled...', 'error')
-                end)
-            end, function()
-                ClearPedTasks(cache.ped)
-                QBCore.Functions.Notify('Canceled...', 'error')
-            end)
-        else
-            ClearPedTasks(cache.ped)
-        end
-    else
-        QBCore.Functions.Notify('Not enough Police!', 'error')
     end
 end)
 
