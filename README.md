@@ -8,9 +8,10 @@
 - Server synced cooldowns for all parking meters
 - Police notifications
 - Server distance checks
+- Particle effects & animations
 
 # Dependencies:
-- [qb-core](https://github.com/qbcore-framework/qb-core)
+- [Renewed-Lib](https://github.com/Renewed-Scripts/Renewed-Lib)
 - [ox_lib](https://github.com/overextended/ox_lib/releases)
 - [ox_inventory](https://github.com/overextended/ox_inventory/releases)
 - [ox_target](https://github.com/overextended/ox_target/releases)
