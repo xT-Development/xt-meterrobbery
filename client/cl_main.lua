@@ -74,6 +74,6 @@ end)
 
 AddEventHandler('onResourceStart', function(resource) if resource == GetCurrentResourceName() then xTc.CreateMeters() end end)
 AddEventHandler('onResourceStop', function(resource) if resource == GetCurrentResourceName() then xTc.RemoveMeters() end end)
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function() xTc.CreateMeters() end)
-RegisterNetEvent('QBCore:Client:OnPlayerUnload', function() xTc.RemoveMeters() end)
+RegisterNetEvent('Renewed-Lib:client:PlayerLoaded', function() xTc.CreateMeters() end)
+RegisterNetEvent('Renewed-Lib:client:PlayerUnloaded', function() xTc.RemoveMeters() end)
 RegisterNetEvent('police:SetCopCount', function(amount) CurrentCops = amount end)
