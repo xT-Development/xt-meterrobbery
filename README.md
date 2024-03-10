@@ -9,9 +9,9 @@
 - Police notifications
 - Server distance checks
 - Particle effects & animations
+- QB / QBX / ESX / OX / ND Bridge Support
 
 # Dependencies:
-- [Renewed-Lib](https://github.com/Renewed-Scripts/Renewed-Lib)
 - [ox_lib](https://github.com/overextended/ox_lib/releases)
 - [ox_inventory](https://github.com/overextended/ox_inventory/releases)
 - [ox_target](https://github.com/overextended/ox_target/releases)
