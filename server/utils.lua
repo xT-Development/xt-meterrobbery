@@ -20,7 +20,6 @@ function hasPoliceJob(source, jobs)
     local playerJob = getPlayerJob(source)
     if jobType == 'table' then
         for x = 1, #jobs do
-            print(x, jobs[x], playerJob)
             if playerJob == jobs[x] then
                 callback = true
                 break
