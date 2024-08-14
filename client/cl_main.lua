@@ -13,8 +13,8 @@ function robParkingMeter(data)
         return
     end
 
-    local Cooldown = lib.callback.await('xt-meterrobbery:server:getMeterCooldown', false, data.entity)
-    if Cooldown then
+    local onCooldown = lib.callback.await('xt-meterrobbery:server:getMeterCooldown', false, data.entity)
+    if onCooldown then
         lib.notify({ title = 'This meter is broken!', type = 'error' })
         return
     end
@@ -23,6 +23,7 @@ function robParkingMeter(data)
 
     lib.requestAnimDict('anim@melee@machete@streamed_core@')
     TaskPlayAnim(cache.ped, 'anim@melee@machete@streamed_core@', 'plyr_walking_attack_a', 3.0, 3.0, -1, 16, 0, false, false, false)
+    RemoveAnimDict('anim@melee@machete@streamed_core@')
 
     local success = clConfig.MinigameFunction()
     if not success then
